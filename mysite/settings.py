@@ -5,3 +5,4 @@ if os.environ.get("DJANGO_ENV") == "PRODUCTION":
 else:
     from .local_settings import *
 
+

@@ -150,3 +150,4 @@ MEDIA_ROOT = os.environ["RAILWAY_VOLUME_MOUNT_PATH"]
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

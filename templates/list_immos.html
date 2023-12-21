@@ -1,0 +1,16 @@
+{% extends "base.html" %}  <!-- Ersetzen Sie dies durch Ihren Basis-Template-Namen, wenn Sie eines haben -->
+{% block content %}
+<h1>Immobilienliste</h1>
+<div class="immobilien-liste">
+    {% for immo in immobilien %}
+    <div class="immobilie">
+        <h2>{{ immo.name }}</h2>
+        <!-- Angenommen, Sie haben ein 'bild' Feld oder eine Methode, um die URL des Hauptbildes zu bekommen -->
+        {% if immo.image_main_thumbnail %}
+        <img src="{{ immo.image_main_thumbnail.url }}" alt="Bild von {{ immo.name }}">
+        {% endif %}
+        <!-- Fügen Sie hier zusätzliche Informationen hinzu, wie Sie möchten -->
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

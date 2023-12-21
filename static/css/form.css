@@ -1,0 +1,206 @@
+.form-input {
+  display: block;
+  width: 100%;
+  height: 40px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  padding: 10px 16px;
+  box-shadow: 1px 1px 2px 0 rgba(51, 51, 51, 0.2) inset;
+  background-color: #fff;
+  background-clip: padding-box;
+  color: #999;
+  font-size: 16px;
+  font-weight: normal;
+  transition: all 250ms;
+}
+
+.form-select {
+  display: block;
+  width: 100%;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  box-shadow: 1px 1px 2px 0 rgba(51, 51, 51, 0.2) inset;
+  background-color: #fff;
+  background-clip: padding-box;
+  color: #999;
+  font-size: 16px;
+  font-weight: normal;
+  transition: all 250ms;
+}
+.form-input::-moz-placeholder {
+  color: #999;
+}
+.form-input:-ms-input-placeholder {
+  color: #999;
+}
+.form-input::placeholder {
+  color: #999;
+}
+.form-input:focus:required {
+  border-color: #02ffd0;
+  outline: 0 none;
+}
+.form-input:required:-moz-placeholder-shown {
+  border: 1px solid #e8e8e8;
+}
+.form-input:required:-ms-input-placeholder {
+  border: 1px solid #e8e8e8;
+}
+.form-input:required:placeholder-shown {
+  border: 1px solid #e8e8e8;
+}
+.form-input:required:not(:-moz-placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:not(:-ms-input-placeholder):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:not(:placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:not(:-moz-placeholder-shown):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:not(:-ms-input-placeholder):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:not(:placeholder-shown):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-input:required:focus:invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+
+.form-select::-moz-placeholder {
+  color: #999;
+}
+.form-select:-ms-input-placeholder {
+  color: #999;
+}
+.form-select::placeholder {
+  color: #999;
+}
+.form-select:focus:required {
+  border-color: #02ffd0;
+  outline: 0 none;
+}
+.form-select:required:-moz-placeholder-shown {
+  border: 1px solid #e8e8e8;
+}
+.form-select:required:-ms-input-placeholder {
+  border: 1px solid #e8e8e8;
+}
+.form-select:required:placeholder-shown {
+  border: 1px solid #e8e8e8;
+}
+.form-select:required:not(:-moz-placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:not(:-ms-input-placeholder):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:not(:placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:not(:-moz-placeholder-shown):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:not(:-ms-input-placeholder):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:not(:placeholder-shown):valid {
+  border: 1px solid #2fe678;
+  color: #2fe678;
+  box-shadow: 0 0 0 1px;
+}
+.form-select:required:focus:invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+
+
+
+.form-control:required:not(:-moz-placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-control:required:not(:-ms-input-placeholder):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+.form-control:required:not(:placeholder-shown):invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+
+.form-control:required:focus:invalid {
+  border: 1px solid red;
+  color: red;
+  box-shadow: 0 0 0 1px;
+}
+
+
+.form {
+  max-width: 30rem;
+  margin: 2rem auto;
+}
+.form-group {
+  margin-bottom: 24px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+.form-group--submit {
+  display: flex;
+  justify-content: flex-end;
+}
+.form-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.form-button {
+  padding: 1.5rem 2rem;
+  font-size: 1.125rem;
+  cursor: pointer;
+  background-color: #02ffd0;
+  border: 0;
+  border-radius: 0.125rem;
+  transition: background-color 300ms;
+}
+.form-button:hover, .form-button:focus {
+  background-color: #80fee7;
+}
+.textarea-form-input {
+  height: 6rem;
+  resize: none;
+}

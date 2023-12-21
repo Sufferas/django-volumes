@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block title %}
+    New Project
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+
+    <div class="px-4 py-5 my-5">
+        <h1 class="display-5 fw-bold">Add New Real Estate</h1>
+        <div class="col-lg-12 mx-auto">
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+
+                <form class="row g-3" id="post_form" method="post" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+
+                    {#              {% for hidden in form.hidden_fields %}#}
+                    {#                  {{ hidden }}#}
+                    {#              {% endfor %}#}
+                    {##}
+                    {#                    <!-- Name-->#}
+                    {##}
+                    {#                                  {% for field in form %}#}
+                    {#                                      {{ field }} <br />#}
+                    {#                                  {% endfor %}#}
+
+                    <!-- Titel in 3 Sprachen -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Grundlegendes</h2>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_name" class="form-label">Name: *</label>
+                                <input type="text" name="name" id="id_name" class="form-input" required
+                                       maxlength="255"
+                                       placeholder="P000" minlength="3"
+                                       value="{{ form.fields.name.value|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="id_category" class="form-label">Kategorie: *</label>
+                                <select name="category" id="id_category" class="form-select" required>
+                                    {% for value, label in form.fields.category.choices %}
+                                        <option value="{{ value }}" {% if form.fields.category.value == value %}
+                                                selected {% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-check-label" for="id_is_active">
+                                    Sichtbar für Alle
+                                </label>
+                                <input class="form-check-input" type="checkbox" name="is_active" id="id_is_active"
+                                        {% if form.fields.is_active.value %} checked {% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_description" class="form-label">Beschreibung kurz (Vorschau):</label>
+                                <textarea name="description" id="id_description" class="form-input textarea-form-input"
+
+                                          rows="3" placeholder="Schönes Hotel am Ötscher"
+                                          maxlength="255">{{ form.fields.description.value|default:'' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Imports -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Bilder und PDFs</h2>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_image_main" class="form-label">Hauptbild:</label>
+                                <input type="file" name="image_main" id="id_image_main" class="form-control"
+                                       required
+                                       accept="image/png, image/jpeg, image/webp" onchange="previewImage(event)">
+                                <img id="image_main_preview"
+                                     style="max-width: 100%; height: auto; margin-top: 10px; display: none;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_images" class="form-label">Bilder:</label>
+                                <input type="file" name="images" multiple id="id_images" class="form-control"
+                                       accept="image/png, image/jpeg, image/webp"
+                                       onchange="previewMultipleImages(event)">
+                                <div id="images_preview" style="margin-top: 10px;"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_expose_de" class="form-label">Expose DE:</label>
+                                <input type="file" name="expose_de" id="id_expose_de" class="form-control"
+                                       accept="application/pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_expose_en" class="form-label">Expose EN:</label>
+                                <input type="file" name="expose_en" id="id_expose_en" class="form-control"
+                                       accept="application/pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_expose_ru" class="form-label">Expose RU:</label>
+                                <input type="file" name="expose_ru" id="id_expose_ru" class="form-control"
+                                       accept="application/pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_dokumente" class="form-label">Dokumente:</label>
+                                <input type="file" name="dokumente" id="id_dokumente" multiple class="form-control"
+                                       accept="image/png, image/jpeg, image/webp, application/pdf, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                                       onchange="updateDokumentePreview(event)">
+                                <div id="dokumente_preview" style="margin-top: 10px;"></div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <!-- Beschreibung -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Überschrieft und Beschreibung in 3 Sprachen</h2>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_de" class="form-label">Titel (DE):</label>
+                                <input type="text" name="title_de" id="id_title_de" class="form-input" maxlength="255"
+                                       placeholder="Titel DE" minlength="3"
+                                       required
+                                       value="{{ form.fields.title_de.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_de" class="form-label">Beschreibung (DE):</label>
+                                {#                                <textarea name="description_de" id="id_description_de" required#}
+                                {#                                          class="form-control">{{ form.fields.description_de.value|default:'' }}</textarea>#}
+                                <textarea name="description_de" id="id_description_de"
+                                          class="ckeditor form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_en" class="form-label">Titel (EN):</label>
+                                <input type="text" name="title_en" id="id_title_en" class="form-input" maxlength="255"
+                                       placeholder="Titel EN" minlength="3"
+                                       required
+                                       value="{{ form.fields.title_en.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_en" class="form-label">Beschreibung (EN):</label>
+                                <textarea name="description_en" id="id_description_en"
+                                          class="ckeditor form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_ru" class="form-label">Titel (RU):</label>
+                                <input type="text" name="title_ru" id="id_title_ru" class="form-input" maxlength="255"
+                                       required
+                                       placeholder="Titel RU" minlength="3"
+                                       value="{{ form.fields.title_ru.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_ru" class="form-label">Beschreibung (RU):</label>
+                                <textarea name="description_ru" id="id_description_ru"
+                                          class="ckeditor form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Tabelle mit Informationen</h2>
+
+                        <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <div class="form-group">
+                                <label for="id_object_id" class="form-label">Object id: *</label>
+                                <input type="text" name="object_id" id="id_object_id" class="form-input" required
+                                       maxlength="255"
+                                       placeholder="P000" minlength="3"
+                                       value="{{ form.fields.object_id.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_price" class="form-label">Preis:</label>
+                                <input type="number" step="1" name="price" id="id_price" class="form-input"
+                                       placeholder="10000"
+                                       max="9999999" value="{{ form.fields.price.value|default:'' }}">
+                            </div>
+                            <!-- Condition -->
+                            <div class="form-group">
+                                <label for="id_condition" class="form-label">Zustand:</label>
+                                <select name="condition" id="id_condition" class="form-input">
+                                    {% for value, label in form.fields.condition.choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <!-- Available From (DE, EN, RU) -->
+                            <div class="form-group">
+                                <label for="id_available_from_de" class="form-label">Verfügbar ab (DE):</label>
+                                <input type="text" name="available_from_de" id="id_available_from_de" class="form-input"
+                                       placeholder="Ab Sofort"
+                                       maxlength="100" value="{{ form.fields.available_from_de.value|default:'' }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_available_from_en" class="form-label">Verfügbar ab (EN):</label>
+                                <input type="text" name="available_from_en" id="id_available_from_en" class="form-input"
+                                       placeholder="From Now"
+                                       maxlength="100" value="{{ form.fields.available_from_en.value|default:'' }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_available_from_ru" class="form-label">Verfügbar ab (RU):</label>
+                                <input type="text" name="available_from_ru" id="id_available_from_ru" class="form-input"
+                                       placeholder="From Now"
+                                       maxlength="100" value="{{ form.fields.available_from_ru.value|default:'' }}">
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- Operating Costs -->
+                            <div class="form-group">
+                                <label for="id_operating_costs_de" class="form-label">Betriebskosten DE:</label>
+                                <input type="text" name="operating_costs_de" id="id_operating_costs_de"
+                                       class="form-input"
+                                       placeholder="430€/Monat"
+                                       maxlength="100" value="{{ form.fields.operating_costs_de.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_operating_costs_en" class="form-label">Betriebskosten EN:</label>
+                                <input type="text" name="operating_costs_en" id="id_operating_costs_en"
+                                       class="form-input"
+                                       placeholder="430€/mouth"
+                                       maxlength="100" value="{{ form.fields.operating_costs_en.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_operating_costs_ru" class="form-label">Betriebskosten RU:</label>
+                                <input type="text" name="operating_costs_ru" id="id_operating_costs_ru"
+                                       class="form-input"
+                                       placeholder="430€/рот"
+                                       maxlength="100" value="{{ form.fields.operating_costs_ru.value|default:'' }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <!-- Living Space -->
+                            <div class="form-group">
+                                <label for="id_living_space" class="form-label">Wohnfläche:</label>
+                                <input type="number" step="1" name="living_space" id="id_living_space"
+                                       class="form-input"
+                                       placeholder="260"
+                                       max="99999999" value="{{ form.fields.living_space.value|default:'' }}">
+                            </div>
+
+                            <!-- Lot Size -->
+                            <div class="form-group">
+                                <label for="id_lot_size" class="form-label">Grundstückfläche:</label>
+                                <input type="number" step="1" name="lot_size" id="id_lot_size" class="form-input"
+                                       placeholder="1255"
+                                       max="99999999" value="{{ form.fields.lot_size.value|default:'' }}">
+                            </div>
+
+                            <!-- Has Basement -->
+
+                            <div class="form-group">
+                                <label for="id_has_basement" class="form-check-label">Keller vorhanden</label>
+                                <input type="checkbox" name="has_basement" id="id_has_basement"
+                                       class="form-check-input"
+                                        {% if form.fields.has_basement.value %} checked {% endif %}>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <div class="form-group">
+                                <label for="id_rooms" class="form-label">Räume:</label>
+                                <input type="number" step="1" name="rooms" id="id_rooms"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.fields.rooms.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_bathrooms" class="form-label">Badezimmer:</label>
+                                <input type="number" step="1" name="bathrooms" id="id_bathrooms"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.fields.bathrooms.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_terraces" class="form-label">Terrassen Fläche:</label>
+                                <input type="number" step="1" name="terraces" id="id_terraces"
+                                       class="form-input"
+                                       placeholder="18"
+                                       max="999" value="{{ form.fields.terraces.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_toilets" class="form-label">WCs:</label>
+                                <input type="number" step="1" name="toilets" id="id_toilets"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.fields.toilets.value|default:'' }}">
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- Heating Type -->
+                            <div class="form-group">
+                                <label for="id_heating_type" class="form-label">Heizungsart:</label>
+                                <select name="heating_type" id="id_heating_type" class="form-control">
+                                    {% for value, label in form.fields.heating_type.choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Heating System -->
+                            <div class="form-group">
+                                <label for="id_heating_system" class="form-label">Heizsystem:</label>
+                                <select name="heating_system" id="id_heating_system" class="form-control">
+                                    {% for value, label in form.fields.heating_system.choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Parking Spaces Available -->
+                            <div class="form-group">
+                                <label class="form-label">Stellplatzart:</label>
+                                {% for choice in form.parking_type %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="{{ choice.name }}"
+                                               value="{{ choice.choice_value }}" id="{{ choice.id_for_label }}"
+                                               {% if choice.choice_value in form.parking_type.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            {{ choice.choice_label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Parking Type -->
+                            <div class="form-group">
+                                <label for="id_parking_anzahl" class="form-label">Anzahl der Stellplätze:</label>
+                                <input type="number" step="1" name="parking_anzahl" id="id_parking_anzahl"
+                                       class="form-input"
+                                       placeholder="1"
+                                       max="999" value="{{ form.fields.parking_anzahl.value|default:'' }}">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- HWB Value and Class -->
+                            <div class="form-group">
+                                <label for="id_hwb_value" class="form-label">HWB-Wert:</label>
+                                <input type="text" name="hwb_value" id="id_hwb_value" class="form-input"
+                                       placeholder="none"
+                                       maxlength="100" value="{{ form.fields.hwb_value.value|default:'' }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_hwb_class" class="form-label">HWB-Klasse:</label>
+                                <input type="text" name="hwb_class" id="id_hwb_class" class="form-input"
+                                       placeholder="none"
+                                       maxlength="100" value="{{ form.fields.hwb_class.value|default:'' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- google -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Google Maps</h2>
+                        <div class="col-md-4">
+                            <!-- Latitude -->
+                            <div class="form-group">
+                                <label for="id_latitude" class="form-label">Breitengrad (Latitude): *</label>
+                                <input type="number" step="any" name="latitude" id="id_latitude" class="form-input"
+                                       required
+                                       placeholder="48.8566" value="{{ form.fields.latitude.value|default:'' }}">
+                            </div>
+                            <!-- Longitude -->
+                            <div class="form-group">
+                                <label for="id_longitude" class="form-label">Längengrad (Longitude): *</label>
+                                <input type="number" step="any" name="longitude" id="id_longitude" class="form-input"
+                                       required
+                                       placeholder="2.3522" value="{{ form.fields.longitude.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-check-label" for="id_umkreis">
+                                    Umkreis Anzeigen JA/NEIN
+                                </label>
+                                <input class="form-check-input" type="checkbox" name="umkreis" id="id_umkreis"
+                                        {% if form.fields.umkreis.value %} checked {% endif %}>
+                            </div>
+
+                            <div id="hilfstext-container" style="margin-top:50px;">
+                                <label for="hilfstext">Hilfstext (wird nicht gesendet):</label>
+                                <div id="hilfstext" contenteditable="true"
+                                     style="border:1px solid #ccc; padding:10px; min-height:100px;">
+                                    Hier können Sie temporäre Notizen oder Informationen speichern.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="google-maps-instructions">
+                                <h2>So finden Sie Google Maps-Koordinaten</h2>
+                                <p>Folgen Sie diesen Schritten, um die Breiten- und Längengrade für eine Adresse über
+                                    Google Maps zu erhalten:</p>
+                                <ol>
+                                    <li>Geben Sie die Adresse in das Suchfeld von Google Maps ein.</li>
+                                    <li>Klicken Sie mit der rechten Maustaste auf den Punkt auf der Karte, für den Sie
+                                        die Koordinaten erhalten möchten.
+                                    </li>
+                                    <li>Ein Menü wird geöffnet. Klicken Sie auf die Zahlen am unteren Rand des Menüs, um
+                                        die Koordinaten zu kopieren.
+                                    </li>
+                                    <li>Fügen Sie die kopierten Koordinaten in die entsprechenden Felder für Breitengrad
+                                        und Längengrad ein.
+                                    </li>
+                                    <li><em>Optional:</em> Wenn Sie die Ungenauigkeit der Adresse berücksichtigen
+                                        möchten, können Sie eine Option zum Anzeigen eines Radius aktivieren.
+                                    </li>
+                                </ol>
+                                <p><strong>Hinweis:</strong> Die kopierten Koordinaten müssen möglicherweise aufgeteilt
+                                    werden, um sie in die jeweiligen Felder einzutragen. Verwenden Sie das
+                                    bereitgestellte Eingabefeld, um die Koordinaten manuell zu teilen.</p>
+                                <img src="{% static 'images/googlemapsinfoedit.PNG' %}"
+                                     alt="Google Maps Koordinaten Anleitung"
+                                     style="max-width:100%;height:auto;">
+                            </div>
+                        </div>
+                    </div>
+
+
+                <!-- SEO -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Google Suche SEO</h2>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_meta_keywords_de" class="form-label">Key Wörter DE:</label>
+                                <input type="text" name="meta_keywords_de" id="id_meta_keywords_de" class="form-input"
+                                       maxlength="155"
+                                       placeholder="Haus, verkaufen, Fußbodenheizung, Sauna"
+                                       value="{{ form.fields.meta_keywords_de.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_meta_description_de" class="form-label">SEO Text DE</label>
+                                <input type="text" name="meta_description_de" id="id_meta_description_de" class="form-input"
+                                       maxlength="255"
+                                       placeholder="Ein wunderschönes Haus nähe Wien...."
+                                       value="{{ form.fields.meta_description_de.value|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_meta_keywords_en" class="form-label">Key Wörter EN:</label>
+                                <input type="text" name="meta_keywords_en" id="id_meta_keywords_en" class="form-input"
+                                       maxlength="155"
+                                       placeholder="House, sell, underfloor heating, sauna"
+                                       value="{{ form.fields.meta_keywords_en.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_meta_description_en" class="form-label">SEO Text EN</label>
+                                <input type="text" name="meta_description_en" id="id_meta_description_en" class="form-input"
+                                       maxlength="255"
+                                       placeholder="A beautiful house near Vienna...."
+                                       value="{{ form.fields.meta_description_en.value|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_meta_keywords_ru" class="form-label">Key Wörter RU:</label>
+                                <input type="text" name="meta_keywords_ru" id="id_meta_keywords_ru" class="form-input"
+                                       maxlength="155"
+                                       placeholder="Дом, продажа, полы с подогревом, сауна"
+                                       value="{{ form.fields.meta_keywords_ru.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_meta_description_ru" class="form-label">SEO Text RU</label>
+                                <input type="text" name="meta_description_ru" id="id_meta_description_ru" class="form-input"
+                                       maxlength="255"
+                                       placeholder="Красивый дом недалеко от Вены..."
+                                       value="{{ form.fields.meta_description_ru.value|default:'' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit">Immobile Speichern</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('image_main_preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function previewMultipleImages(event) {
+            var imagesPreview = document.getElementById('images_preview');
+            imagesPreview.innerHTML = ''; // Löschen der alten Vorschaubilder
+
+            Array.from(event.target.files).forEach(file => {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '160px';
+                    img.style.height = 'auto';
+                    img.style.marginRight = '10px';
+                    img.style.marginBottom = '10px';
+                    imagesPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateDokumentePreview(event) {
+            var files = event.target.files;
+            var previewContainer = document.getElementById('dokumente_preview');
+            previewContainer.innerHTML = ''; // Vorherige Vorschau löschen
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var fileDiv = document.createElement('div');
+                fileDiv.textContent = file.name;
+                previewContainer.appendChild(fileDiv);
+            }
+        }
+
+        function saveHilfstext() {
+            var content = document.getElementById('hilfstext').innerText;
+            localStorage.setItem('hilfstext', content);  // Speichern im lokalen Speicher des Browsers
+        }
+
+        // Funktion, um den Inhalt des Hilfstextfeldes beim Laden der Seite zu setzen
+        function loadHilfstext() {
+            var content = localStorage.getItem('hilfstext');
+            if (content) {
+                document.getElementById('hilfstext').innerText = content;
+            }
+        }
+
+        // Event-Listener, um den Inhalt beim Verlassen des Feldes zu speichern
+        document.getElementById('hilfstext').addEventListener('blur', saveHilfstext);
+
+        // Beim Laden der Seite den gespeicherten Inhalt laden
+        window.onload = loadHilfstext;
+
+
+    </script>
+
+
+
+{% endblock %}

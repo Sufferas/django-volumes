@@ -57,7 +57,10 @@ class Project(models.Model):
     )
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     is_active = models.BooleanField(default=True)
-    description = models.TextField()
+    description_preview_de = models.TextField(null=True, blank=True)
+    description_preview_en = models.TextField(null=True, blank=True)
+    description_preview_ru = models.TextField(null=True, blank=True)
+
     image_main = models.ImageField(upload_to=project_directory_path_main_image)
     image_main_thumbnail = models.ImageField(upload_to=project_directory_path_main_image)
 

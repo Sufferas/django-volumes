@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block title %}
+    New Project
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+    <div class="px-4 py-5 my-5">
+        <h1 class="display-5 fw-bold">Edit your Real Estate</h1>
+        <div class="col-lg-12 mx-auto">
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <form class="row g-3" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {#        {{ form.as_p }}#}
+
+                    <!-- Titel in 3 Sprachen -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Grundlegendes</h2>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_name" class="form-label">Name: *</label>
+                                <input type="text" name="name" id="id_name" class="form-input" required
+                                       maxlength="255"
+                                       placeholder="P000" minlength="3"
+                                       value="{{ form.instance.name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="id_category" class="form-label">Kategorie: *</label>
+                                <select name="category" id="id_category" class="form-select" required>
+                                    {% for value, label in form.fields.category.choices %}
+                                        <option value="{{ value }}"
+                                                {% if form.instance.category == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.errors.category %}
+                                    <div class="alert alert-danger">{{ form.errors.category.as_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-check-label" for="id_is_active">
+                                    Sichtbar für Alle
+                                </label>
+                                <input class="form-check-input" type="checkbox" name="is_active" id="id_is_active"
+                                        {% if form.instance.is_active %} checked {% endif %}>
+                                {% if form.errors.is_active %}
+                                    <div class="alert alert-danger">{{ form.errors.is_active.as_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_description_preview_de" class="form-label">Beschreibung kurz (Vorschau):
+                                    DE</label>
+                                <textarea name="description_preview_de" id="id_description_preview_de"
+                                          class="form-input textarea-form-input"
+
+                                          rows="3" placeholder="Schönes Hotel am Ötscher"
+                                          maxlength="255">{{ form.instance.description_preview_de }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_preview_en" class="form-label">Beschreibung kurz (Vorschau):
+                                    EN</label>
+                                <textarea name="description_preview_en" id="id_description_preview_en"
+                                          class="form-input textarea-form-input"
+
+                                          rows="3" placeholder="Beautiful hotel on the Ötscher"
+                                          maxlength="255">{{ form.instance.description_preview_en }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_preview_ru" class="form-label">Beschreibung kurz (Vorschau):
+                                    RU</label>
+                                <textarea name="description_preview_ru" id="id_description_preview_ru"
+                                          class="form-input textarea-form-input"
+
+                                          rows="3" placeholder="Прекрасный отель на берегу реки Этшер"
+                                          maxlength="255">{{ form.instance.description_preview_ru }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Imports -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Bilder und PDFs</h2>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_image_main" class="form-label">Hauptbild:</label>
+                                <input type="file" name="image_main" id="id_image_main" class="form-control"
+                                       accept="image/png, image/jpeg, image/webp"
+                                       onchange="previewImage(event)">
+                                <!-- Zeigen Sie das vorhandene Hauptbild an, wenn es existiert -->
+                                {% if form.instance.image_main %}
+                                    <img src="{{ form.instance.image_main.url }}" id="image_main_preview"
+                                         style="max-width: 100%; height: auto; margin-top: 10px;">
+                                {% else %}
+                                    <img id="image_main_preview"
+                                         style="max-width: 100%; height: auto; margin-top: 10px; display: none;">
+                                {% endif %}
+                                {% if form.errors.image_main %}
+                                    <div class="alert alert-danger">{{ form.errors.image_main.as_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Expose DE -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_expose_de" class="form-label">Expose DE:</label>
+                                <input type="file" name="expose_de" id="id_expose_de" class="form-control"
+                                       accept="application/pdf">
+                                {% if form.instance.expose_de %}
+                                    <a href="{{ form.instance.expose_de.url }}"
+                                       target="_blank">{{ form.instance.expose_de }}</a>
+                                {% endif %}
+
+                                {% if form.errors.expose_de %}
+                                    <div class="alert alert-danger">{{ form.errors.expose_de.as_text }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Expose EN -->
+                            <div class="form-group">
+                                <label for="id_expose_en" class="form-label">Expose EN:</label>
+                                <input type="file" name="expose_en" id="id_expose_en" class="form-control"
+                                       accept="application/pdf">
+                                {% if form.instance.expose_en %}
+                                    <a href="{{ form.instance.expose_en.url }}"
+                                       target="_blank">{{ form.instance.expose_en }}</a>
+                                {% endif %}
+                                {% if form.errors.expose_en %}
+                                    <div class="alert alert-danger">{{ form.errors.expose_en.as_text }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Expose RU -->
+                            <div class="form-group">
+                                <label for="id_expose_ru" class="form-label">Expose RU:</label>
+                                <input type="file" name="expose_ru" id="id_expose_ru" class="form-control"
+                                       accept="application/pdf">
+                                {% if form.instance.expose_ru %}
+                                    <a href="{{ form.instance.expose_ru.url }}"
+                                       target="_blank">{{ form.instance.expose_ru }}</a>
+                                {% endif %}
+                                {% if form.errors.expose_ru %}
+                                    <div class="alert alert-danger">{{ form.errors.expose_ru.as_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Beschreibung -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Überschrift und Beschreibung in 3 Sprachen</h2>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_de" class="form-label">Titel (DE): *</label>
+                                <input type="text" name="title_de" id="id_title_de" class="form-input" maxlength="255"
+                                       placeholder="Titel DE" minlength="3" required
+                                       value="{{ form.instance.title_de }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_de" class="form-label">Beschreibung (DE):</label>
+                                <textarea name="description_de" id="id_description_de" class="ckeditor form-control"
+                                          required>{{ form.instance.description_de }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_en" class="form-label">Titel (EN): *</label>
+                                <input type="text" name="title_en" id="id_title_en" class="form-input" maxlength="255"
+                                       placeholder="Titel EN" minlength="3" required
+                                       value="{{ form.instance.title_en }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_en" class="form-label">Beschreibung (EN):</label>
+                                <textarea name="description_en" id="id_description_en"
+                                          class="ckeditor form-control">{{ form.instance.description_en }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="id_title_ru" class="form-label">Titel (RU): *</label>
+                                <input type="text" name="title_ru" id="id_title_ru" class="form-input" maxlength="255"
+                                       required
+                                       placeholder="Titel RU" minlength="3"
+                                       value="{{ form.instance.title_ru }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_description_ru" class="form-label">Beschreibung (RU):</label>
+                                <textarea name="description_ru" id="id_description_ru"
+                                          class="ckeditor form-control">{{ form.instance.description_ru }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Tabelle mit Informationen</h2>
+
+                        <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <div class="form-group">
+                                <label for="id_object_id" class="form-label">Object id: *</label>
+                                <input type="text" name="object_id" id="id_object_id" class="form-input" required
+                                       maxlength="255"
+                                       placeholder="P000" minlength="3"
+                                       value="{{ form.instance.object_id }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_price" class="form-label">Preis:</label>
+                                <input type="number" step="1" name="price" id="id_price" class="form-input"
+                                       placeholder="10000"
+                                       max="9999999" value="{{ form.instance.price }}">
+                            </div>
+                            <!-- Zustand -->
+                            <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                                <div class="form-group">
+                                    <label for="id_condition" class="form-label">Zustand:</label>
+                                    <select name="condition" id="id_condition" class="form-input">
+                                        {% for value, label in form.fields.condition.choices %}
+                                            <option value="{{ value }}"
+                                                    {% if form.instance.condition == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.errors.condition %}
+                                        <div class="alert alert-danger">{{ form.errors.condition.as_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <!-- Available From (DE, EN, RU) -->
+                            <div class="form-group">
+                                <label for="id_available_from_de" class="form-label">Verfügbar ab (DE):</label>
+                                <input type="text" name="available_from_de" id="id_available_from_de" class="form-input"
+                                       placeholder="Ab Sofort"
+                                       maxlength="100" value="{{ form.instance.available_from_de }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_available_from_en" class="form-label">Verfügbar ab (EN):</label>
+                                <input type="text" name="available_from_en" id="id_available_from_en" class="form-input"
+                                       placeholder="From Now"
+                                       maxlength="100" value="{{ form.instance.available_from_en }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_available_from_ru" class="form-label">Verfügbar ab (RU):</label>
+                                <input type="text" name="available_from_ru" id="id_available_from_ru" class="form-input"
+                                       placeholder="From Now"
+                                       maxlength="100" value="{{ form.instance.available_from_ru }}">
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- Operating Costs -->
+                            <div class="form-group">
+                                <label for="id_operating_costs_de" class="form-label">Betriebskosten DE:</label>
+                                <input type="text" name="operating_costs_de" id="id_operating_costs_de"
+                                       class="form-input"
+                                       placeholder="430€/Monat"
+                                       maxlength="100" value="{{ form.instance.operating_costs_de }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_operating_costs_en" class="form-label">Betriebskosten EN:</label>
+                                <input type="text" name="operating_costs_en" id="id_operating_costs_en"
+                                       class="form-input"
+                                       placeholder="430€/mouth"
+                                       maxlength="100" value="{{ form.instance.operating_costs_en }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_operating_costs_ru" class="form-label">Betriebskosten RU:</label>
+                                <input type="text" name="operating_costs_ru" id="id_operating_costs_ru"
+                                       class="form-input"
+                                       placeholder="430€/рот"
+                                       maxlength="100" value="{{ form.instance.operating_costs_ru }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+                            <!-- Living Space -->
+                            <div class="form-group">
+                                <label for="id_living_space" class="form-label">Wohnfläche:</label>
+                                <input type="number" step="1" name="living_space" id="id_living_space"
+                                       class="form-input"
+                                       placeholder="260"
+                                       max="99999999" value="{{ form.instance.living_space }}">
+                            </div>
+
+                            <!-- Lot Size -->
+                            <div class="form-group">
+                                <label for="id_lot_size" class="form-label">Grundstückfläche:</label>
+                                <input type="number" step="1" name="lot_size" id="id_lot_size" class="form-input"
+                                       placeholder="1255"
+                                       max="99999999" value="{{ form.instance.lot_size }}">
+                            </div>
+
+                            <!-- Has Basement -->
+
+                            <div class="form-group">
+                                <label for="id_has_basement" class="form-check-label">Keller vorhanden</label>
+                                <input type="checkbox" name="has_basement" id="id_has_basement"
+                                       class="form-check-input"
+                                        {% if form.instance.has_basement %} checked {% endif %}>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <div class="form-group">
+                                <label for="id_rooms" class="form-label">Räume:</label>
+                                <input type="number" step="1" name="rooms" id="id_rooms"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.instance.rooms.value }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_bathrooms" class="form-label">Badezimmer:</label>
+                                <input type="number" step="1" name="bathrooms" id="id_bathrooms"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.instance.bathrooms.value }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_terraces" class="form-label">Terrassen Fläche:</label>
+                                <input type="number" step="1" name="terraces" id="id_terraces"
+                                       class="form-input"
+                                       placeholder="18"
+                                       max="999" value="{{ form.instance.terraces.value }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_toilets" class="form-label">WCs:</label>
+                                <input type="number" step="1" name="toilets" id="id_toilets"
+                                       class="form-input"
+                                       placeholder="3"
+                                       max="999" value="{{ form.instance.toilets.value }}">
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-2" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- Heating Type -->
+                            <div class="form-group">
+                                <label for="id_heating_type" class="form-label">Heizungsart:</label>
+                                <select name="heating_type" id="id_heating_type" class="form-control">
+                                    {% for value, label in form.fields.heating_type.choices %}
+                                        <option value="{{ value }}"
+                                                {% if form.instance.heating_type == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Heating System -->
+                            <div class="form-group">
+                                <label for="id_heating_system" class="form-label">Heizsystem:</label>
+                                <select name="heating_system" id="id_heating_system" class="form-control">
+                                    {% for value, label in form.fields.heating_system.choices %}
+                                        <option value="{{ value }}"
+                                                {% if form.instance.heating_system == value %}selected{% endif %}>
+                                            {{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+<!-- Parking Spaces Available -->
+<div class="form-group">
+    <label class="form-label">Stellplatzart:</label>
+    {% for value, label in form.fields.parking_type.choices %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="parking_type"
+                   value="{{ value }}" id="id_parking_type_{{ forloop.counter0 }}"
+                   {% if value|stringformat:"s" in form.instance.parking_type.values_list|join:"," %}checked{% endif %}>
+            <label class="form-check-label" for="id_parking_type_{{ forloop.counter0 }}">
+                {{ label }}
+            </label>
+        </div>
+    {% endfor %}
+    {% if form.errors.parking_type %}
+        <div class="alert alert-danger">{{ form.errors.parking_type.as_text }}</div>
+    {% endif %}
+</div>
+
+
+                            <!-- Parking Type -->
+                            <div class="form-group">
+                                <label for="id_parking_anzahl" class="form-label">Anzahl der Stellplätze:</label>
+                                <input type="number" step="1" name="parking_anzahl" id="id_parking_anzahl"
+                                       class="form-input"
+                                       placeholder="1"
+                                       max="999" value="{{ form.instance.parking_anzahl }}">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
+                            <!-- HWB Value and Class -->
+                            <div class="form-group">
+                                <label for="id_hwb_value" class="form-label">HWB-Wert:</label>
+                                <input type="text" name="hwb_value" id="id_hwb_value" class="form-input"
+                                       placeholder="none"
+                                       maxlength="100" value="{{ form.instance.hwb_value }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_hwb_class" class="form-label">HWB-Klasse:</label>
+                                <input type="text" name="hwb_class" id="id_hwb_class" class="form-input"
+                                       placeholder="none"
+                                       maxlength="100" value="{{ form.instance.hwb_class }}">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <input type="submit" value="Projekt aktualisieren">
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ imageform.as_p }}
+        <input type="submit" value="Bilder aktualisieren">
+    </form>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ dokumente_form.as_p }}
+        <input type="submit" value="Dokumente aktualisieren">
+    </form>
+
+
+
+
+
+{% endblock %}

@@ -1,16 +1,66 @@
 {% extends "base.html" %}  <!-- Ersetzen Sie dies durch Ihren Basis-Template-Namen, wenn Sie eines haben -->
 {% block content %}
-<h1>Immobilienliste</h1>
-<div class="immobilien-liste">
-    {% for immo in immobilien %}
-    <div class="immobilie">
-        <h2>{{ immo.name }}</h2>
-        <!-- Angenommen, Sie haben ein 'bild' Feld oder eine Methode, um die URL des Hauptbildes zu bekommen -->
-        {% if immo.image_main_thumbnail %}
-        <img src="{{ immo.image_main_thumbnail.url }}" alt="Bild von {{ immo.name }}">
-        {% endif %}
-        <!-- Fügen Sie hier zusätzliche Informationen hinzu, wie Sie möchten -->
+    <h1>Immobilienliste</h1>
+    <div class="immobilien-liste">
+        <div class="row">
+            {% for immo in immobilien %}
+                <div class="col-sm-3">
+                    <div class="card" style="margin-top: 15px">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ immo.name }}</h5>
+                            <p class="card-text">{{ immo.description }}</p>
+
+                            <!-- Angenommen, Sie haben ein 'bild' Feld oder eine Methode, um die URL des Hauptbildes zu bekommen -->
+                            {% if immo.image_main_thumbnail %}
+                                <img src="{{ immo.image_main_thumbnail.url }}" alt="Bild von {{ immo.name }}">
+                            {% endif %}
+                            <div class="form-group" style="margin-top: 20px">
+                                <!-- Button, der das Modal öffnet -->
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal{{ immo.id }}">
+                                    Objekt Löschen
+                                </button>
+                                <a class="btn btn-outline-success" href="{% url 'edit-immo' immo.id %}" role="button">Bearbeiten</a>
+
+
+                                <!-- Fügen Sie hier zusätzliche Informationen hinzu, wie Sie möchten -->
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteModal{{ immo.id }}" tabindex="-1"
+                                     aria-labelledby="deleteModalLabel{{ immo.id }}"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Objekt {{ immo.name }}
+                                                    Löschen?</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Sind Sie sicher, dass Sie das Objekt Löschen möchten?
+                                                {% if immo.image_main_thumbnail %}
+                                                    <img src="{{ immo.image_main_thumbnail.url }}"
+                                                         alt="Bild von {{ immo.name }}">
+                                                {% endif %}
+                                            </div>
+                                            <!-- Modal Content... -->
+                                            <div class="modal-footer">
+                                                <form method="post" action="{% url 'delete-immo' immo.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Schließen
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger">Löschen</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-    {% endfor %}
-</div>
 {% endblock %}

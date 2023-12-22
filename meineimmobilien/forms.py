@@ -7,7 +7,9 @@ from .validators import validate_image_extension
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
-        self.fields['description'].required = False  # Setzen Sie das Feld 'description' als optional
+        self.fields['description_preview_de'].required = False  # Setzen Sie das Feld 'description' als optional
+        self.fields['description_preview_en'].required = False  # Setzen Sie das Feld 'description' als optional
+        self.fields['description_preview_ru'].required = False  # Setzen Sie das Feld 'description' als optional
         self.fields['expose_de'].required = False  # Setzen Sie das Feld 'description' als optional
         self.fields['expose_en'].required = False  # Setzen Sie das Feld 'description' als optional
         self.fields['expose_ru'].required = False
@@ -53,7 +55,7 @@ class ProjectForm(forms.ModelForm):
             "category",
             "is_active",
             'image_main',
-            "description",
+            'description_preview_de', 'description_preview_en', 'description_preview_ru',
             "expose_de", "expose_en", "expose_ru",
             "title_de", "title_en", "title_ru",
             "description_de", "description_en", "description_ru",

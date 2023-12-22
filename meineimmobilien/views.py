@@ -11,8 +11,9 @@ from PIL import Image as PILImage
 import os
 import io
 
-
-
+from django.shortcuts import get_object_or_404, redirect
+import shutil
+from django.conf import settings
 
 def create_thumbnail(image_path, index , size=(195, 125)):
     with PILImage.open(image_path) as img:
@@ -56,7 +57,6 @@ def convert_to_webp(original_image_path, index):
     if original_image_path:
         with PILImage.open(original_image_path) as image:
             dir_name, _ = os.path.split(original_image_path)
-
             # Definieren Sie den neuen Pfad und das Format
             new_image_path = os.path.join(dir_name, f"image_{index}.webp")
 
@@ -91,6 +91,8 @@ def create_project(request):
                 project.image_main = main_image
                 project.save()
 
+                # print(f"Hauptbild gespeichert unter: {project.image_main.path}")
+
                 # Konvertieren des Hauptbildes in WEBP und Umbenennen
                 new_main_image_path = convert_to_webp(project.image_main.path, 0)  # Index 0 für das Hauptbild
                 project.image_main = new_main_image_path
@@ -110,8 +112,11 @@ def create_project(request):
                 image_instance.images = new_image_path
                 image_instance.save()
 
+                # print(f"Bild {index} gespeichert unter: {image_instance.images.path}")
+
             for file in request.FILES.getlist('dokumente'):
-                Dokumente.objects.create(project=project, dokumente=file)
+                dokument_instance = Dokumente.objects.create(project=project, dokumente=file)
+                # print(f"Dokument gespeichert unter: {dokument_instance.dokumente.path}")
 
             messages.success(request, "New Project Added")
             return HttpResponseRedirect("/admin")
@@ -120,10 +125,61 @@ def create_project(request):
     else:
         form = ProjectForm()
         imageform = ImageForm()
+        dokumente_form = DokumenteForm()
 
-    return render(request, "create_project.html", {"form": form, "imageform": imageform})
+    return render(request, "create_project.html", {"form": form, "imageform": imageform, "dokumente_form": dokumente_form})
 
 
 def list_immos(request):
     immobilien = Project.objects.all()  # Holen Sie alle Immobilien aus der Datenbank
     return render(request, 'list_immos.html', {'immobilien': immobilien})
+
+
+def delete_immo(request, immo_id):
+    if request.method == "POST":
+        immo = get_object_or_404(Project, pk=immo_id)
+        project_name = immo.name
+        immo.delete()
+
+        # Pfad zum Projektordner
+        project_folder_path = os.path.join(settings.MEDIA_ROOT, 'properties', project_name)
+
+        # Überprüfen, ob der Ordner existiert und dann löschen
+        if os.path.isdir(project_folder_path):
+            shutil.rmtree(project_folder_path)
+            success_message = f"Das Objekt '{project_name}' und der zugehörige Ordner wurden erfolgreich gelöscht."
+        else:
+            success_message = f"Das Objekt '{project_name}' wurde erfolgreich gelöscht, aber der Ordner wurde nicht gefunden."
+
+        messages.success(request, success_message)
+        return redirect('list-immo')  # Setzen
+
+
+def edit_immo(request, immo_id):
+    project = get_object_or_404(Project, pk=immo_id)
+
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        imageform = ImageForm(request.POST, request.FILES)
+        dokumente_form = DokumenteForm(request.POST, request.FILES)
+
+        if form.is_valid() and imageform.is_valid() and dokumente_form.is_valid():
+            form.save()
+            # Hier Logik zum Speichern der Bilder und Dokumente hinzufügen.
+            messages.success(request, 'Projekt wurde erfolgreich aktualisiert.')
+            return redirect('list-immo')  # oder wohin auch immer Sie nach dem Bearbeiten navigieren möchten
+
+    else:
+        form = ProjectForm(instance=project)
+        # Sie müssen die Logik implementieren, um die vorhandenen Bilder und Dokumente
+        # als Instanzen für ImageForm und DokumenteForm zu übergeben,
+        # z.B. mittels 'initial' oder indem Sie das Queryset für die Forms filtern.
+        imageform = ImageForm()
+        dokumente_form = DokumenteForm()
+
+    return render(request, 'edit_project.html', {
+        'form': form,
+        'imageform': imageform,
+        'dokumente_form': dokumente_form,
+        'project': project
+    })

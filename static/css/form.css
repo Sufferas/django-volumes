@@ -204,3 +204,16 @@
   height: 6rem;
   resize: none;
 }
+
+.form-input:not(:placeholder-shown) {
+    color: black; /* Farbe, wenn ein Wert vorhanden ist */
+}
+
+.form-select:not(:placeholder-shown) {
+    color: black; /* Farbe, wenn ein Wert vorhanden ist */
+}
+
+.form-input:required:not(:placeholder-shown):valid {
+    border: 1px solid #2fe678;
+    box-shadow: 0 0 0 1px;
+}

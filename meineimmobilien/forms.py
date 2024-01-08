@@ -31,6 +31,10 @@ class ProjectForm(forms.ModelForm):
         self.fields['heating_type'].required = False
         self.fields['heating_system'].required = False
         self.fields['parking_type'].required = False
+        self.fields['parking_garage'].required = False
+        self.fields['parking_liftgarage'].required = False
+        self.fields['parking_einfahrt'].required = False
+        self.fields['parking_nicht_bekannt'].required = False
         self.fields['parking_anzahl'].required = False
         self.fields['hwb_value'].required = False
         self.fields['hwb_class'].required = False
@@ -70,7 +74,7 @@ class ProjectForm(forms.ModelForm):
             "terraces",
             "toilets",
             "heating_type", "heating_system",
-            "parking_type", "parking_anzahl",
+            "parking_garage", "parking_liftgarage", "parking_einfahrt", "parking_nicht_bekannt", "parking_anzahl",
             "hwb_value", "hwb_class",
             "latitude", "longitude", "umkreis",
             "meta_description_de", "meta_keywords_de",

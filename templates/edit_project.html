@@ -21,10 +21,12 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="id_name" class="form-label">Name: *</label>
-                                <input type="text" name="name" id="id_name" class="form-input" required
+                                {{ form.instance.name }}
+                                <input type="text" name="name" id="id_name" class="form-input" required hidden=""
                                        maxlength="255"
                                        placeholder="P000" minlength="3"
                                        value="{{ form.instance.name }}">
+
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -225,10 +227,10 @@
                                        max="9999999" value="{{ form.instance.price }}">
                             </div>
                             <!-- Zustand -->
-                            <div class="col-md-1" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;">
+
                                 <div class="form-group">
                                     <label for="id_condition" class="form-label">Zustand:</label>
-                                    <select name="condition" id="id_condition" class="form-input">
+                                    <select name="condition" id="id_condition" class="form-select">
                                         {% for value, label in form.fields.condition.choices %}
                                             <option value="{{ value }}"
                                                     {% if form.instance.condition == value %}selected{% endif %}>
@@ -240,8 +242,6 @@
                                         <div class="alert alert-danger">{{ form.errors.condition.as_text }}</div>
                                     {% endif %}
                                 </div>
-                            </div>
-
 
                         </div>
 
@@ -365,7 +365,7 @@
                             <!-- Heating Type -->
                             <div class="form-group">
                                 <label for="id_heating_type" class="form-label">Heizungsart:</label>
-                                <select name="heating_type" id="id_heating_type" class="form-control">
+                                <select name="heating_type" id="id_heating_type" class="form-select">
                                     {% for value, label in form.fields.heating_type.choices %}
                                         <option value="{{ value }}"
                                                 {% if form.instance.heating_type == value %}selected{% endif %}>
@@ -378,7 +378,7 @@
                             <!-- Heating System -->
                             <div class="form-group">
                                 <label for="id_heating_system" class="form-label">Heizsystem:</label>
-                                <select name="heating_system" id="id_heating_system" class="form-control">
+                                <select name="heating_system" id="id_heating_system" class="form-select">
                                     {% for value, label in form.fields.heating_system.choices %}
                                         <option value="{{ value }}"
                                                 {% if form.instance.heating_system == value %}selected{% endif %}>
@@ -387,23 +387,46 @@
                                 </select>
                             </div>
 
-<!-- Parking Spaces Available -->
-<div class="form-group">
-    <label class="form-label">Stellplatzart:</label>
-    {% for value, label in form.fields.parking_type.choices %}
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="parking_type"
-                   value="{{ value }}" id="id_parking_type_{{ forloop.counter0 }}"
-                   {% if value|stringformat:"s" in form.instance.parking_type.values_list|join:"," %}checked{% endif %}>
-            <label class="form-check-label" for="id_parking_type_{{ forloop.counter0 }}">
-                {{ label }}
-            </label>
-        </div>
-    {% endfor %}
-    {% if form.errors.parking_type %}
-        <div class="alert alert-danger">{{ form.errors.parking_type.as_text }}</div>
-    {% endif %}
-</div>
+                            <!-- Parking Spaces Available -->
+                            <div class="form-group">
+                                <label class="form-label">Stellplatzart:</label>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_garage"
+                                           id="id_parking_garage"
+                                            {% if form.instance.parking_garage %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_garage">
+                                        Garage
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_liftgarage"
+                                           id="id_parking_liftgarage"
+                                            {% if form.instance.parking_liftgarage %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_liftgarage">
+                                        Liftgarage
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_einfahrt"
+                                           id="id_parking_einfahrt"
+                                            {% if form.instance.parking_einfahrt %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_einfahrt">
+                                        Einfahrt
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_nicht_bekannt"
+                                           id="id_parking_nicht_bekannt"
+                                            {% if form.instance.parking_nicht_bekannt %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_nicht_bekannt">
+                                        Nicht bekannt
+                                    </label>
+                                </div>
+                            </div>
 
 
                             <!-- Parking Type -->
@@ -436,8 +459,77 @@
                         </div>
                     </div>
 
+                    <!-- google -->
+                    <div class="row px-4 py-5"
+                         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+                        <h2 class="display-12 fw-bold">Google Maps</h2>
+                        <div class="col-md-4">
+                            <!-- Latitude -->
+                            <div class="form-group">
+                                <label for="id_latitude" class="form-label">Breitengrad (Latitude): *</label>
+                                <input type="number" step="any" name="latitude" id="id_latitude" class="form-input"
+                                       required
+                                       placeholder="48.8566" value="{{ form.instance.latitude }}">
+                            </div>
+                            <!-- Longitude -->
+                            <div class="form-group">
+                                <label for="id_longitude" class="form-label">Längengrad (Longitude): *</label>
+                                <input type="number" step="any" name="longitude" id="id_longitude" class="form-input"
+                                       required
+                                       placeholder="2.3522" value="{{ form.instance.longitude }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-check-label" for="id_umkreis">
+                                    Umkreis Anzeigen JA/NEIN
+                                </label>
+                                <input class="form-check-input" type="checkbox" name="umkreis" id="id_umkreis"
+                                        {% if form.instance.umkreis %} checked {% endif %}>
+                            </div>
 
-                    <input type="submit" value="Projekt aktualisieren">
+                            <div id="hilfstext-container" style="margin-top:50px;">
+                                <label for="hilfstext">Hilfstext (wird nicht gesendet):</label>
+                                <div id="hilfstext" contenteditable="true"
+                                     style="border:1px solid #ccc; padding:10px; min-height:100px;">
+                                    Hier können Sie temporäre Notizen oder Informationen speichern.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="google-maps-instructions">
+                                <h2>So finden Sie Google Maps-Koordinaten</h2>
+                                <p>Folgen Sie diesen Schritten, um die Breiten- und Längengrade für eine Adresse über
+                                    Google Maps zu erhalten:</p>
+                                <ol>
+                                    <li>Geben Sie die Adresse in das Suchfeld von Google Maps ein.</li>
+                                    <li>Klicken Sie mit der rechten Maustaste auf den Punkt auf der Karte, für den Sie
+                                        die Koordinaten erhalten möchten.
+                                    </li>
+                                    <li>Ein Menü wird geöffnet. Klicken Sie auf die Zahlen am unteren Rand des Menüs, um
+                                        die Koordinaten zu kopieren.
+                                    </li>
+                                    <li>Fügen Sie die kopierten Koordinaten in die entsprechenden Felder für Breitengrad
+                                        und Längengrad ein.
+                                    </li>
+                                    <li><em>Optional:</em> Wenn Sie die Ungenauigkeit der Adresse berücksichtigen
+                                        möchten, können Sie eine Option zum Anzeigen eines Radius aktivieren.
+                                    </li>
+                                </ol>
+                                <p><strong>Hinweis:</strong> Die kopierten Koordinaten müssen möglicherweise aufgeteilt
+                                    werden, um sie in die jeweiligen Felder einzutragen. Verwenden Sie das
+                                    bereitgestellte Eingabefeld, um die Koordinaten manuell zu teilen.</p>
+                                <img src="{% static 'images/googlemapsinfoedit.PNG' %}"
+                                     alt="Google Maps Koordinaten Anleitung"
+                                     style="max-width:100%;height:auto;">
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                <div class="col-12">
+                        <button class="btn btn-primary" type="submit">Projekt aktualisieren</button>
+                    </div>
                 </form>
 
 
@@ -458,8 +550,17 @@
         <input type="submit" value="Dokumente aktualisieren">
     </form>
 
-
-
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('image_main_preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
 
 
 {% endblock %}

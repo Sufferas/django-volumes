@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .forms import ImageForm, ProjectForm, DokumenteForm
-from .models import Image, Project, Imagethumbnail, Dokumente
+from .models import Image, Project, Imagethumbnail, Dokumente, project_directory_path_main_image
 
 from PIL import Image as PILImage
 import os
@@ -14,6 +14,7 @@ import io
 from django.shortcuts import get_object_or_404, redirect
 import shutil
 from django.conf import settings
+
 
 def create_thumbnail(image_path, index , size=(195, 125)):
     with PILImage.open(image_path) as img:
@@ -59,12 +60,13 @@ def convert_to_webp(original_image_path, index):
             dir_name, _ = os.path.split(original_image_path)
             # Definieren Sie den neuen Pfad und das Format
             new_image_path = os.path.join(dir_name, f"image_{index}.webp")
-
             # Konvertieren und speichern des Bildes im WEBP-Format
             image.save(new_image_path, 'WEBP')
-
             # Löschen der Originaldatei
-            os.remove(original_image_path)
+            try:
+                os.remove(original_image_path)
+            except OSError as e:
+                print(f"Fehler: {e.strerror}")
 
             return new_image_path
     return None
@@ -163,11 +165,45 @@ def edit_immo(request, immo_id):
         imageform = ImageForm(request.POST, request.FILES)
         dokumente_form = DokumenteForm(request.POST, request.FILES)
 
-        if form.is_valid() and imageform.is_valid() and dokumente_form.is_valid():
+        if form.is_valid():
             form.save()
+
+            # Verarbeiten des Hauptbildes und des Hauptbild-Thumbnails
+            if 'image_main' in request.FILES:
+                main_image = request.FILES['image_main']
+
+                project.image_main = main_image
+                # project.save()
+                # messages.success(request, 'Bilder.')
+
+                # print(f"Hauptbild gespeichert unter: {project.image_main.path}")
+                full_path = project_directory_path_main_image(project, main_image.name)
+                absolute_path = os.path.join(settings.MEDIA_ROOT, full_path)
+
+                new_main_image_path = convert_to_webp(absolute_path, 0)  # Index 0 für das Hauptbild
+
+                # new_main_image_path = convert_to_webp(project.image_main.path, 0)  # Index 0 für das Hauptbild
+                project.image_main = new_main_image_path
+                project.save()
+
+                # Optional: Thumbnail für das Hauptbild erstellen
+                thumbnail_path = create_thumbnail(new_main_image_path, 0, size=(280, 196))  # Index 0 für das Hauptbild
+                project.image_main_thumbnail = thumbnail_path
+                project.save()
+
+
             # Hier Logik zum Speichern der Bilder und Dokumente hinzufügen.
             messages.success(request, 'Projekt wurde erfolgreich aktualisiert.')
             return redirect('list-immo')  # oder wohin auch immer Sie nach dem Bearbeiten navigieren möchten
+
+        else:
+            print(form.errors, imageform.errors)
+
+        if imageform.is_valid() and dokumente_form.is_valid():
+            # Logik zum Verarbeiten der Bilder und Dokumente hier
+            messages.success(request, 'Bilder und Dokumente erfolgreich aktualisiert.')
+        else:
+            messages.error(request, 'Fehler beim Aktualisieren von Bildern und Dokumenten.')
 
     else:
         form = ProjectForm(instance=project)

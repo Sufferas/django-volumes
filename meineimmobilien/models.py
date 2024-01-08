@@ -141,7 +141,11 @@ class Project(models.Model):
         ('unknown', _('Nicht bekannt')),
     ]
     # Eine durch Kommas getrennte Liste von Werten
-    parking_type = models.CharField(max_length=100, blank=True, default=_(""))
+    # parking_type = models.CharField(max_length=100, blank=True, default=_(""))
+    parking_garage = models.BooleanField(default=False)
+    parking_liftgarage = models.BooleanField(default=False)
+    parking_einfahrt = models.BooleanField(default=False)
+    parking_nicht_bekannt = models.BooleanField(default=False)
     parking_anzahl = models.IntegerField(null=True, blank=True)  # WC
     hwb_value = models.CharField(max_length=100, blank=True, default=_(""))  # HWB-Wert
     hwb_class = models.CharField(max_length=100, blank=True, default=_(""))  # HWB-Klasse

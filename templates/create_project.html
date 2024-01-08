@@ -52,22 +52,28 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="id_description_preview_de" class="form-label">Beschreibung kurz (Vorschau): DE</label>
-                                <textarea name="description_preview_de" id="id_description_preview_de" class="form-input textarea-form-input"
+                                <label for="id_description_preview_de" class="form-label">Beschreibung kurz (Vorschau):
+                                    DE</label>
+                                <textarea name="description_preview_de" id="id_description_preview_de"
+                                          class="form-input textarea-form-input"
 
                                           rows="3" placeholder="Schönes Hotel am Ötscher"
                                           maxlength="255">{{ form.fields.description_preview_de.value|default:'' }}</textarea>
                             </div>
                             <div class="form-group">
-                                <label for="id_description_preview_en" class="form-label">Beschreibung kurz (Vorschau): EN</label>
-                                <textarea name="description_preview_en" id="id_description_preview_en" class="form-input textarea-form-input"
+                                <label for="id_description_preview_en" class="form-label">Beschreibung kurz (Vorschau):
+                                    EN</label>
+                                <textarea name="description_preview_en" id="id_description_preview_en"
+                                          class="form-input textarea-form-input"
 
                                           rows="3" placeholder="Beautiful hotel on the Ötscher"
                                           maxlength="255">{{ form.fields.description_preview_en.value|default:'' }}</textarea>
                             </div>
                             <div class="form-group">
-                                <label for="id_description_preview_ru" class="form-label">Beschreibung kurz (Vorschau): RU</label>
-                                <textarea name="description_preview_ru" id="id_description_preview_ru" class="form-input textarea-form-input"
+                                <label for="id_description_preview_ru" class="form-label">Beschreibung kurz (Vorschau):
+                                    RU</label>
+                                <textarea name="description_preview_ru" id="id_description_preview_ru"
+                                          class="form-input textarea-form-input"
 
                                           rows="3" placeholder="Прекрасный отель на берегу реки Этшер"
                                           maxlength="255">{{ form.fields.description_preview_ru.value|default:'' }}</textarea>
@@ -354,17 +360,55 @@
                             <!-- Parking Spaces Available -->
                             <div class="form-group">
                                 <label class="form-label">Stellplatzart:</label>
-                                {% for choice in form.parking_type %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="{{ choice.name }}"
-                                               value="{{ choice.choice_value }}" id="{{ choice.id_for_label }}"
-                                               {% if choice.choice_value in form.parking_type.value %}checked{% endif %}>
-                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
-                                            {{ choice.choice_label }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                {#                                {% for choice in form.parking_type %}#}
+                                {#                                    <div class="form-check">#}
+                                {#                                        <input class="form-check-input" type="checkbox" name="{{ choice.name }}"#}
+                                {#                                               value="{{ choice.choice_value }}" id="{{ choice.id_for_label }}"#}
+                                {#                                               {% if choice.choice_value in form.parking_type.value %}checked{% endif %}>#}
+                                {#                                        <label class="form-check-label" for="{{ choice.id_for_label }}">#}
+                                {#                                            {{ choice.choice_label }}#}
+                                {#                                        </label>#}
+                                {#                                    </div>#}
+                                {#                                {% endfor %}#}
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_garage"
+                                           id="id_parking_garage"
+                                            {% if form.fields.parking_garage.value %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_garage">
+                                        Garage
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_liftgarage"
+                                           id="id_parking_liftgarage"
+                                            {% if form.fields.parking_liftgarage.value %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_liftgarage">
+                                        Liftgarage
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_einfahrt"
+                                           id="id_parking_einfahrt"
+                                            {% if form.fields.parking_einfahrt.value %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_einfahrt">
+                                        Einfahrt
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="parking_nicht_bekannt"
+                                           id="id_parking_nicht_bekannt"
+                                            {% if form.fields.parking_nicht_bekannt.value %} checked {% endif %}>
+                                    <label class="form-check-label" for="id_parking_nicht_bekannt">
+                                        Nicht bekannt
+                                    </label>
+                                </div>
                             </div>
+
+
 
                             <!-- Parking Type -->
                             <div class="form-group">
@@ -462,7 +506,7 @@
                     </div>
 
 
-                <!-- SEO -->
+                    <!-- SEO -->
                     <div class="row px-4 py-5"
                          style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
                         <h2 class="display-12 fw-bold">Google Suche SEO</h2>
@@ -476,7 +520,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="id_meta_description_de" class="form-label">SEO Text DE</label>
-                                <input type="text" name="meta_description_de" id="id_meta_description_de" class="form-input"
+                                <input type="text" name="meta_description_de" id="id_meta_description_de"
+                                       class="form-input"
                                        maxlength="255"
                                        placeholder="Ein wunderschönes Haus nähe Wien...."
                                        value="{{ form.fields.meta_description_de.value|default:'' }}">
@@ -492,7 +537,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="id_meta_description_en" class="form-label">SEO Text EN</label>
-                                <input type="text" name="meta_description_en" id="id_meta_description_en" class="form-input"
+                                <input type="text" name="meta_description_en" id="id_meta_description_en"
+                                       class="form-input"
                                        maxlength="255"
                                        placeholder="A beautiful house near Vienna...."
                                        value="{{ form.fields.meta_description_en.value|default:'' }}">
@@ -508,7 +554,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="id_meta_description_ru" class="form-label">SEO Text RU</label>
-                                <input type="text" name="meta_description_ru" id="id_meta_description_ru" class="form-input"
+                                <input type="text" name="meta_description_ru" id="id_meta_description_ru"
+                                       class="form-input"
                                        maxlength="255"
                                        placeholder="Красивый дом недалеко от Вены..."
                                        value="{{ form.fields.meta_description_ru.value|default:'' }}">

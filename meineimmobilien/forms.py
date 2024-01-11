@@ -13,6 +13,11 @@ class ProjectForm(forms.ModelForm):
         self.fields['expose_de'].required = False  # Setzen Sie das Feld 'description' als optional
         self.fields['expose_en'].required = False  # Setzen Sie das Feld 'description' als optional
         self.fields['expose_ru'].required = False
+
+        # self.fields['expose_de_thumbnail'].required = False
+        # self.fields['expose_en_thumbnail'].required = False
+        # self.fields['expose_ru_thumbnail'].required = False
+
         self.fields['price'].required = False
         self.fields['condition'].required = False
         self.fields['available_from_de'].required = False

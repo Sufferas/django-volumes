@@ -5,6 +5,7 @@
 {% endblock %}
 {% block content %}
     {% load static %}
+    {% load custom_filters %}
 
     <div class="px-4 py-5 my-5">
         <h1 class="display-5 fw-bold">Edit your Real Estate</h1>
@@ -228,20 +229,20 @@
                             </div>
                             <!-- Zustand -->
 
-                                <div class="form-group">
-                                    <label for="id_condition" class="form-label">Zustand:</label>
-                                    <select name="condition" id="id_condition" class="form-select">
-                                        {% for value, label in form.fields.condition.choices %}
-                                            <option value="{{ value }}"
-                                                    {% if form.instance.condition == value %}selected{% endif %}>
-                                                {{ label }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    {% if form.errors.condition %}
-                                        <div class="alert alert-danger">{{ form.errors.condition.as_text }}</div>
-                                    {% endif %}
-                                </div>
+                            <div class="form-group">
+                                <label for="id_condition" class="form-label">Zustand:</label>
+                                <select name="condition" id="id_condition" class="form-select">
+                                    {% for value, label in form.fields.condition.choices %}
+                                        <option value="{{ value }}"
+                                                {% if form.instance.condition == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.errors.condition %}
+                                    <div class="alert alert-danger">{{ form.errors.condition.as_text }}</div>
+                                {% endif %}
+                            </div>
 
                         </div>
 
@@ -522,13 +523,9 @@
                                      style="max-width:100%;height:auto;">
                             </div>
                         </div>
-                    </div>
-
-
-
-
-                <div class="col-12">
-                        <button class="btn btn-primary" type="submit">Projekt aktualisieren</button>
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="submit">Projekt aktualisieren</button>
+                        </div>
                     </div>
                 </form>
 
@@ -538,29 +535,148 @@
     </div>
 
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ imageform.as_p }}
-        <input type="submit" value="Bilder aktualisieren">
-    </form>
+    <!-- Bestehende Bilder und deren Thumbnails anzeigen -->
+    <div class="row px-4 py-5"
+         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+        <h2 class="display-12 fw-bold">Bilder Löschen</h2>
+        {% for image_form in image_forms %}
+            <!-- Anzeige des Bildes -->
+            {% if image_form.instance.images %}
+                <div class="col-md-2">
+                    <div class="form-group ">
+                        <img src="{{ image_form.instance.thumbnail.images_thumbnail.url }}" alt="Thumbnail"
+                             style="max-width: 200px; height: auto;">
+                        <form method="post" action="{% url 'delete-image' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="image_id" value="{{ image_form.instance.id }}">
+                            <button type="submit" class="deletebutton">
+
+                                <span class="text">
+                                    Delete
+                                </span>
+                                <span class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path
+                                            d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ dokumente_form.as_p }}
-        <input type="submit" value="Dokumente aktualisieren">
+        <!-- Imports -->
+        <div class="row px-4 py-5"
+             style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+            <h2 class="display-12 fw-bold">Bilder hinzufügen</h2>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="id_images" class="form-label">Bilder:</label>
+                    <input type="file" name="images" multiple id="id_images" class="form-control"
+                           accept="image/png, image/jpeg, image/webp"
+                           onchange="previewMultipleImages(event)">
+                    <div id="images_preview" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="submit">Bilder aktualisieren</button>
+            </div>
+        </div>
+
     </form>
 
-    <script>
-        function previewImage(event) {
-            var reader = new FileReader();
-            reader.onload = function () {
-                var output = document.getElementById('image_main_preview');
-                output.src = reader.result;
-                output.style.display = 'block';
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    </script>
+    <!-- Liste der Dokumente -->
+    <div class="row px-4 py-5"
+         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+        <h2>Dokumente Löschen</h2>
+
+        {% for dokument in dokumente_instances %}
+            <div class="col-md-2">
+                <div class="form-group ">
+                    <p>{{ dokument.dokumente.name|basename }}</p>
+                    <a href="{{ dokument.dokumente.url }}" download>Download</a>
+
+                    <!-- Formular zum Löschen des Dokuments -->
+                    <form method="post" action="{% url 'delete-dokument' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="dokument_id" value="{{ dokument.id }}">
+                        <button type="submit" class="deletebutton">
+
+                                <span class="text">
+                                    Delete
+                                </span>
+                            <span class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path
+                                            d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path>
+                                    </svg>
+                                </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+
+
+        <div class="row px-4 py-5"
+             style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; margin-top: 15px;">
+            <h2>Dokumente Hinzufügen</h2>
+
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Ihre anderen Formularelemente ... -->
+
+                <!-- Formularfeld für das Hochladen von Dokumenten -->
+                <div class="form-group">
+                    <label for="id_dokumente" class="form-label">Dokumente:</label>
+                    <input type="file" name="dokumente" id="id_dokumente" multiple class="form-control"
+                           accept="image/png, image/jpeg, image/webp, application/pdf"
+                           onchange="updateDokumentePreview(event)">
+                    <div id="dokumente_preview" style="margin-top: 10px;"></div>
+                </div>
+
+                <!-- Submit-Button -->
+
+                <div class="col-12">
+                    <button class="btn btn-primary" type="submit">Dokumente speichern</button>
+                </div>
+            </form>
+        </div>
+        <script>
+            function previewImage(event) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var output = document.getElementById('image_main_preview');
+                    output.src = reader.result;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+            function previewMultipleImages(event) {
+                var imagesPreview = document.getElementById('images_preview');
+                imagesPreview.innerHTML = ''; // Löschen der alten Vorschaubilder
+
+                Array.from(event.target.files).forEach(file => {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '160px';
+                        img.style.height = 'auto';
+                        img.style.marginRight = '10px';
+                        img.style.marginBottom = '10px';
+                        imagesPreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        </script>
 
 
 {% endblock %}

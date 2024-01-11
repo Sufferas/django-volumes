@@ -8,8 +8,6 @@ from django.utils.translation import gettext_lazy as _
 import os
 
 
-
-
 def project_directory_path(instance, filename, extra_path=''):
     # Erstellen Sie einen gültigen Dateipfad, indem Sie ungültige Zeichen aus dem Projektnamen entfernen
     # project_name = ''.join(e for e in instance.name if e.isalnum())
@@ -42,7 +40,6 @@ def project_directory_path_dokumente(instance, filename):
     return project_directory_path(instance, filename, extra_path='dokumente')
 
 
-
 class Project(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -65,8 +62,11 @@ class Project(models.Model):
     image_main_thumbnail = models.ImageField(upload_to=project_directory_path_main_image)
 
     expose_de = models.FileField(upload_to=project_directory_path_expose)
+    expose_de_thumbnail = models.ImageField(upload_to=project_directory_path_expose)
     expose_en = models.FileField(upload_to=project_directory_path_expose)
+    expose_en_thumbnail = models.ImageField(upload_to=project_directory_path_expose)
     expose_ru = models.FileField(upload_to=project_directory_path_expose)
+    expose_ru_thumbnail = models.ImageField(upload_to=project_directory_path_expose)
 
     # Titles in 3 languages
     title_de = models.CharField(max_length=255)
@@ -155,7 +155,6 @@ class Project(models.Model):
     longitude = models.FloatField()
     umkreis = models.BooleanField(default=False)
 
-
     meta_description_de = models.CharField(max_length=255, blank=True, default='')
     meta_keywords_de = models.CharField(max_length=155, blank=True, default='')
 
@@ -170,8 +169,6 @@ class Project(models.Model):
     # Counter for page views
     view_count = models.IntegerField(default=0)
 
-
-
     def __str__(self):
         return self.name
 
@@ -182,7 +179,7 @@ class Image(models.Model):
 
 
 class Imagethumbnail(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, )
+    image = models.OneToOneField(Image, on_delete=models.CASCADE, related_name='thumbnail')
     images_thumbnail = models.ImageField(upload_to=project_directory_path_images)
 
 
@@ -190,3 +187,8 @@ class Dokumente(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, )
     dokumente = models.FileField(upload_to=project_directory_path_dokumente)
 
+
+# Das neue Dokumentethumbnail-Modell
+class Dokumentethumbnail(models.Model):
+    dokumente = models.OneToOneField(Dokumente, on_delete=models.CASCADE, related_name='thumbnail')
+    thumbnail = models.ImageField(upload_to=project_directory_path_dokumente)

@@ -15,6 +15,7 @@ from os.path import splitext
 import re
 
 import fitz  # PyMuPDF
+from django.contrib.auth.decorators import login_required
 
 
 def create_pdf_thumbnail(pdf_path):
@@ -88,11 +89,12 @@ def convert_to_webp(original_image_path, num):
     return None
 
 
-# Create your views here.
+@login_required
 def index(request):
     return render(request, "index.html")
 
 
+@login_required
 def create_project(request):
     if request.method == "POST":
         form = ProjectForm(request.POST, request.FILES)
@@ -157,7 +159,7 @@ def create_project(request):
                 # print(f"Dokument gespeichert unter: {dokument_instance.dokumente.path}")
 
             messages.success(request, "New Project Added")
-            return HttpResponseRedirect("/admin")
+            return HttpResponseRedirect("/")
         else:
             print(form.errors, imageform.errors)
     else:
@@ -168,11 +170,13 @@ def create_project(request):
     return render(request, "create_project.html", {"form": form, "imageform": imageform, "dokumente_form": dokumente_form})
 
 
+@login_required
 def list_immos(request):
     immobilien = Project.objects.all()  # Holen Sie alle Immobilien aus der Datenbank
     return render(request, 'list_immos.html', {'immobilien': immobilien})
 
 
+@login_required
 def delete_immo(request, immo_id):
     if request.method == "POST":
         immo = get_object_or_404(Project, pk=immo_id)
@@ -206,6 +210,7 @@ def get_highest_image_number(project):
     return highest_number
 
 
+@login_required
 def edit_immo(request, immo_id):
     project = get_object_or_404(Project, pk=immo_id)
     old_expose_de_path = project.expose_de.path if project.expose_de else None
@@ -342,6 +347,7 @@ def edit_immo(request, immo_id):
     })
 
 
+@login_required
 def delete_image(request):
     if request.method == 'POST':
         image_id = request.POST.get('image_id')
@@ -365,6 +371,7 @@ def delete_image(request):
     return HttpResponseRedirect(reverse('list-immo'))
 
 
+@login_required
 def delete_dokument(request):
     if request.method == 'POST':
         dokument_id = request.POST.get('dokument_id')

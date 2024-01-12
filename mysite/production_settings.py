@@ -151,3 +151,4 @@ MEDIA_ROOT = os.environ["RAILWAY_VOLUME_MOUNT_PATH"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = 'login'

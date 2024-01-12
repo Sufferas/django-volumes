@@ -1,10 +1,20 @@
 {% extends "base.html" %}  <!-- Ersetzen Sie dies durch Ihren Basis-Template-Namen, wenn Sie eines haben -->
+{% load static %}
+
+
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/button.css' %}">
+    <!-- HTML !-->
+<a class="button-29" href="{% url 'add-immo' %}" role="button">Immobilien Hinzufügen</a>
+
+
+
+
     <h1>Immobilienliste</h1>
     <div class="immobilien-liste">
         <div class="row">
             {% for immo in immobilien %}
-                <div class="col-sm-3">
+                <div class="col-sm-2" style="min-width: 340px;">
                     <div class="card" style="margin-top: 15px">
                         <div class="card-body">
                             <h5 class="card-title">{{ immo.name }}</h5>

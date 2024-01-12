@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    New Project
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+    <div class="row px-4 py-5"
+         style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; width: 50%;
+    margin: auto;
+    margin-top: 100px;">
+
+        <h2 class="display-12 fw-bold">Login</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Benutzername:</label>
+                <input type="text" name="username" class="form-control" id="id_username">
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="id_password">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     "corsheaders",
     'ckeditor',
+    'rest_framework',
 
     'posts',
     'meineimmobilien',

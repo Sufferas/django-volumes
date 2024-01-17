@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     "corsheaders",
     'ckeditor',
+    'rest_framework',
 
     'posts',
     'meineimmobilien',
@@ -138,3 +139,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = 'login'
+CORS_ALLOW_ALL_ORIGINS = True

@@ -403,6 +403,7 @@ from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from .serializers import DynamicLanguageSerializer
+from django.db.models import Q
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -410,6 +411,32 @@ class ProjectListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-        projects = Project.objects.filter(is_active=True)
+        search_query = request.query_params.get('search', '')
+        search_terms = search_query.split()
+
+        # Basisabfrage: aktive Projekte
+        query = Q(is_active=True)
+
+        # Erweitern Sie die Abfrage nur, wenn Suchbegriffe vorhanden sind
+        if search_terms:
+            search_query = Q()
+            for term in search_terms:
+                search_query |= (
+                        Q(description_de__icontains=term) |
+                        Q(description_en__icontains=term) |
+                        Q(description_ru__icontains=term) |
+                        Q(title_de__icontains=term) |
+                        Q(title_en__icontains=term) |
+                        Q(title_ru__icontains=term) |
+                        Q(meta_description_de__icontains=term) |
+                        Q(meta_keywords_de__icontains=term) |
+                        Q(meta_description_en__icontains=term) |
+                        Q(meta_keywords_en__icontains=term) |
+                        Q(meta_description_ru__icontains=term) |
+                        Q(meta_keywords_ru__icontains=term)
+                )
+            query &= search_query
+
+        projects = Project.objects.filter(query)
         serializer = DynamicLanguageSerializer(projects, many=True, context={'request': request})
         return Response(serializer.data)

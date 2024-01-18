@@ -15,8 +15,6 @@ class DynamicLanguageSerializer(serializers.ModelSerializer):
     def get_description_preview(self, obj):
         language = self.context['request'].query_params.get('label', 'de')
         description_attr = f'description_preview_{language}'
-        print(f"Sprache: {language}, Beschreibungsfeld: {description_attr}")
         description = getattr(obj, description_attr, None)
-        print(f"Beschreibung: {description}")
         return description
 

@@ -9,7 +9,7 @@ class DynamicLanguageSerializer(serializers.ModelSerializer):
         model = Project
         fields = [
             'name', 'category', 'description_preview', 'image_main_thumbnail',
-            'price', 'object_id'
+            'price', 'object_id', 'living_space', 'lot_size'
         ]
 
     def get_description_preview(self, obj):

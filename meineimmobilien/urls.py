@@ -12,5 +12,6 @@ urlpatterns = [
     path('delete_image/', views.delete_image, name="delete-image"),
     path('delete_dokument/', views.delete_dokument, name='delete-dokument'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    path('api/projects/', csrf_exempt(views.ProjectListView.as_view()), name='project-list'),
+    path('projects/', csrf_exempt(views.ProjectListView.as_view()), name='project-list'),
+    path('project/<str:object_id>/<str:label>/', views.ProjectDetailView.as_view(), name='project-detail'),
 ]

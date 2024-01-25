@@ -402,7 +402,7 @@ from django.utils.decorators import method_decorator
 
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from .serializers import DynamicLanguageSerializer
+from .serializers import DynamicLanguageSerializer, ProjectDetailSerializer
 from django.db.models import Q
 
 
@@ -439,4 +439,17 @@ class ProjectListView(APIView):
 
         projects = Project.objects.filter(query)
         serializer = DynamicLanguageSerializer(projects, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ProjectDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, object_id, label):
+        project = Project.objects.filter(object_id=object_id).first()
+        if not project:
+            return Response({"message": "Projekt nicht gefunden"}, status=404)
+
+        serializer = ProjectDetailSerializer(project, context={'request': request})
         return Response(serializer.data)

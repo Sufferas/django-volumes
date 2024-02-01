@@ -19,15 +19,16 @@ class DynamicLanguageSerializer(serializers.ModelSerializer):
         return description
 
 
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Image
-        fields = '__all__'
-
-
 class ImageThumbnailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imagethumbnail
+        fields = '__all__'
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    thumbnail = ImageThumbnailSerializer(read_only=True)
+    class Meta:
+        model = Image
         fields = '__all__'
 
 

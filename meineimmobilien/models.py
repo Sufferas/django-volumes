@@ -114,6 +114,7 @@ class Project(models.Model):
         ('gas', _('Gas')),
         ('district_heating', _('Fernwärme')),
         ('heat_pump', _('Wärmepumpe')),
+        ('pellet_heating', _('Pelletsheizung')),
     )
     HEATING_SYSTEM_CHOICES = (
         ('underfloor_heating', _('Fußbodenheizung')),

@@ -79,7 +79,7 @@ class Project(models.Model):
     description_ru = RichTextField()
 
     object_id = models.CharField(max_length=50, unique=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
 
     CONDITION_CHOICES = (
         ('very_good', _('Sehr gut')),
